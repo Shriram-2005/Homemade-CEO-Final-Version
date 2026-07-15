@@ -92,31 +92,40 @@ class _StoryScreenState extends State<StoryScreen> {
           backgroundColor: AppColors.navyBlack,
           body: Stack(
             children: [
-              // Main Scrollable Content
-              SingleChildScrollView(
-                controller: _scrollController,
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  children: [
-                    StoryHeroSection(key: _sectionKeys[0]),
-                    StoryOriginSection(key: _sectionKeys[1]),
-                    StoryJamiSection(key: _sectionKeys[2]),
-                    StoryEconomicsSection(key: _sectionKeys[3]),
-                  ],
-                ),
-              ),
+              Row(
+                children: [
+                  // Interactive Line Sidebar (Desktop Only)
+                  if (!isMobile)
+                    Container(
+                      width: 320, // Increased width column for sidebar to fit Malayalam
+                      height: double.infinity,
+                      color: const Color(0xFF090F24),
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.only(left: 40),
+                      child: LineSidebar(
+                        items: sidebarItems,
+                        activeIndex: _activeIndex,
+                        onItemTapped: _scrollToSection,
+                      ),
+                    ),
 
-              // Interactive Line Sidebar (Desktop Only)
-              if (!isMobile)
-                Positioned(
-                  left: 40,
-                  top: MediaQuery.sizeOf(context).height / 2 - 150,
-                  child: LineSidebar(
-                    items: sidebarItems,
-                    activeIndex: _activeIndex,
-                    onItemTapped: _scrollToSection,
+                  // Main Scrollable Content
+                  Expanded(
+                    child: SingleChildScrollView(
+                      controller: _scrollController,
+                      physics: const BouncingScrollPhysics(),
+                      child: Column(
+                        children: [
+                          StoryHeroSection(key: _sectionKeys[0]),
+                          StoryOriginSection(key: _sectionKeys[1]),
+                          StoryJamiSection(key: _sectionKeys[2]),
+                          StoryEconomicsSection(key: _sectionKeys[3]),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                ],
+              ),
 
               // The Staggered Glassmorphism Side Menu overlay (fixed on top)
               const Positioned.fill(

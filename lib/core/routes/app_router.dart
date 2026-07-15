@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/splash/splash_screen.dart';
 import '../../features/landing/landing_screen.dart';
 import '../../features/story/story_screen.dart';
+import '../../features/products/products_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -18,6 +19,10 @@ class AppRouter {
       GoRoute(
         path: '/story',
         builder: (context, state) => const StoryScreen(),
+      ),
+      GoRoute(
+        path: '/products',
+        builder: (context, state) => const ProductsScreen(),
       ),
     ],
   );

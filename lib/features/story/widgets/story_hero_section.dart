@@ -39,11 +39,35 @@ class StoryHeroSection extends StatelessWidget {
             
             const SizedBox(height: 24),
             
-            Container(
-              width: 1,
-              height: 100,
-              color: AppColors.accentGold.withValues(alpha: 0.5),
-            ).animate().fade(delay: 500.ms, duration: 800.ms).scaleY(begin: 0.0, alignment: Alignment.topCenter),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  lang.translate('EST. 2026', '2026 മുതൽ'),
+                  style: TextStyle(
+                    color: AppColors.textWhite.withValues(alpha: 0.5),
+                    letterSpacing: 4.0,
+                    fontSize: 12,
+                  ),
+                ).animate().fade(delay: 800.ms, duration: 600.ms),
+                const SizedBox(width: 24),
+                Container(
+                  width: 1,
+                  height: 100,
+                  color: AppColors.accentGold.withValues(alpha: 0.5),
+                ).animate().fade(delay: 500.ms, duration: 800.ms).scaleY(begin: 0.0, alignment: Alignment.topCenter),
+                const SizedBox(width: 24),
+                Text(
+                  lang.translate('KERALA, INDIA', 'കേരളം, ഇന്ത്യ'),
+                  style: TextStyle(
+                    color: AppColors.textWhite.withValues(alpha: 0.5),
+                    letterSpacing: 4.0,
+                    fontSize: 12,
+                  ),
+                ).animate().fade(delay: 800.ms, duration: 600.ms),
+              ],
+            ),
           ],
         ),
       ),

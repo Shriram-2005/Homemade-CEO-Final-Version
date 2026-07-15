@@ -68,38 +68,47 @@ class _LineSidebarState extends State<LineSidebar> {
                     children: [
                       // Marker Line
                       Container(
-                        width: 40 + (effect * 20), // Stretches slightly less
+                        width: 20 + (effect * 15), // Made line shorter
                         height: 1,
                         color: color.withValues(alpha: 0.5 + (effect * 0.5)),
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 12),
                       // Text shifted
-                      Transform.translate(
-                        offset: Offset(effect * maxShift, 0),
-                        child: Row(
-                          children: [
-                            // Index (01, 02)
-                            Text(
-                              (index + 1).toString().padLeft(2, '0'),
-                              style: TextStyle(
-                                color: color.withValues(alpha: 0.6),
-                                fontSize: 12,
-                                fontFamily: 'monospace',
-                                letterSpacing: 1.0,
+                      Expanded(
+                        child: Transform.translate(
+                          offset: Offset(effect * maxShift, 0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Index (01, 02)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 2.0),
+                                child: Text(
+                                  (index + 1).toString().padLeft(2, '0'),
+                                  style: TextStyle(
+                                    color: color.withValues(alpha: 0.6),
+                                    fontSize: 12,
+                                    fontFamily: 'monospace',
+                                    letterSpacing: 1.0,
+                                  ),
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            // Label
-                            Text(
-                              widget.items[index],
-                              style: TextStyle(
-                                color: color,
-                                fontSize: 14 + (effect * 2), // slightly enlarge
-                                letterSpacing: 1.0,
-                                fontWeight: effect > 0.5 ? FontWeight.w600 : FontWeight.w300,
+                              const SizedBox(width: 12),
+                              // Label
+                              Expanded(
+                                child: Text(
+                                  widget.items[index],
+                                  style: TextStyle(
+                                    color: color,
+                                    fontSize: 14 + (effect * 2),
+                                    letterSpacing: 1.0,
+                                    fontWeight: effect > 0.5 ? FontWeight.w600 : FontWeight.w300,
+                                  ),
+                                  softWrap: true, // Allow wrapping
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ],

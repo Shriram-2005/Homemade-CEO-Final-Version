@@ -284,7 +284,7 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
               } else {
                 final route = menuItems[index].route;
                 _toggleMenu();
-                if (route == "/landing" || route == "/story") {
+                if (route == "/landing" || route == "/story" || route == "/products") {
                   context.go(route);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
