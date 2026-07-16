@@ -15,7 +15,9 @@ class MenuItemData {
 }
 
 class StaggeredMenu extends StatefulWidget {
-  const StaggeredMenu({super.key});
+  final bool showLogo;
+  final bool isDarkTheme;
+  const StaggeredMenu({super.key, this.showLogo = true, this.isDarkTheme = true});
 
   @override
   State<StaggeredMenu> createState() => _StaggeredMenuState();
@@ -25,6 +27,7 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
   late AnimationController _controller;
   bool _isOpen = false;
   bool _showLoginWheel = false;
+  int _selectedLoginIndex = 0;
 
   final List<MenuItemData> menuItems = [
     MenuItemData(labelEn: "Home", labelMl: "ഹോം", route: "/landing"),
@@ -82,19 +85,24 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
             ),
           ),
           
-        _buildSlidingLayer(
-          width: panelWidth,
-          color: AppColors.accentGold,
-          interval: const Interval(0.0, 0.5, curve: Curves.easeOutQuart),
+        IgnorePointer(
+          ignoring: !_isOpen,
+          child: Stack(
+            children: [
+              _buildSlidingLayer(
+                width: panelWidth,
+                color: AppColors.accentGold,
+                interval: const Interval(0.0, 0.5, curve: Curves.easeOutQuart),
+              ),
+              _buildSlidingLayer(
+                width: panelWidth,
+                color: AppColors.navyDeep,
+                interval: const Interval(0.08, 0.58, curve: Curves.easeOutQuart),
+              ),
+              _buildMainPanel(panelWidth),
+            ],
+          ),
         ),
-        
-        _buildSlidingLayer(
-          width: panelWidth,
-          color: AppColors.navyDeep,
-          interval: const Interval(0.08, 0.58, curve: Curves.easeOutQuart),
-        ),
-        
-        _buildMainPanel(panelWidth),
         _buildHeader(),
       ],
     );
@@ -219,29 +227,43 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
         Expanded(
           child: OptionWheel(
             items: loginOptions,
-            defaultSelected: 0,
+            defaultSelected: _selectedLoginIndex,
             onChange: (index) {
-              print("Selected login option: ${loginOptions[index]}");
+              setState(() {
+                _selectedLoginIndex = index;
+              });
             },
           ),
         ),
         Center(
           child: MouseRegion(
             cursor: SystemMouseCursors.click,
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              decoration: BoxDecoration(
-                color: AppColors.accentGold,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Center(
-                child: Text(
-                  lang.translate("Continue", "തുടരുക"),
-                  style: const TextStyle(
-                    color: AppColors.primaryNavy,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+            child: GestureDetector(
+              onTap: () {
+                _toggleMenu();
+                if (_selectedLoginIndex == 0) {
+                  context.go('/buyer/dashboard');
+                } else if (_selectedLoginIndex == 1) {
+                  context.go('/seller/dashboard');
+                } else {
+                  context.go('/admin/dashboard');
+                }
+              },
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.accentGold,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: Text(
+                    lang.translate("Continue", "തുടരുക"),
+                    style: const TextStyle(
+                      color: AppColors.primaryNavy,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -364,25 +386,29 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
     
     return Positioned(
       top: 0, left: 0, right: 0,
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: isMobile ? 16.0 : 32.0, 
-          vertical: isMobile ? 16.0 : 24.0
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
+      child: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: isMobile ? 16.0 : 32.0, 
+            vertical: isMobile ? 16.0 : 24.0
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
             // Logo
-            Row(
-              children: [
-                Text('Homemade ', style: TextStyle(color: AppColors.textWhite, fontSize: isMobile ? 16 : 20, fontWeight: FontWeight.w400)),
-                Text('CEO', style: TextStyle(color: AppColors.accentGold, fontSize: isMobile ? 16 : 20, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
-              ],
-            ),
+            if (widget.showLogo)
+              Row(
+                children: [
+                  Text('Homemade ', style: TextStyle(color: AppColors.textWhite, fontSize: isMobile ? 16 : 20, fontWeight: FontWeight.w400)),
+                  Text('CEO', style: TextStyle(color: AppColors.accentGold, fontSize: isMobile ? 16 : 20, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+                ],
+              )
+            else
+              const SizedBox.shrink(),
             // Actions
             Row(
               children: [
-                const PremiumLanguageToggle(),
+                PremiumLanguageToggle(isDarkTheme: widget.isDarkTheme),
                 SizedBox(width: isMobile ? 12 : 24),
                 MouseRegion(
                   cursor: SystemMouseCursors.click,
@@ -410,7 +436,7 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
                                   _isOpen ? lang.translate('Close', 'അടയ്ക്കുക') : lang.translate('Menu', 'മെനു'),
                                   key: ValueKey(_isOpen.toString() + lang.isEnglish.toString()),
                                   style: TextStyle(
-                                    color: AppColors.textWhite, 
+                                    color: _isOpen ? AppColors.textWhite : (widget.isDarkTheme ? AppColors.textWhite : Colors.black87), 
                                     fontSize: isMobile ? 14 : 16, 
                                     fontWeight: FontWeight.w500
                                   ),
@@ -429,8 +455,8 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
                                   height: isMobile ? 14 : 18,
                                   child: Stack(
                                     children: [
-                                      Positioned(top: isMobile ? 6 : 8, left: 0, right: 0, child: Container(height: 2, color: AppColors.textWhite)),
-                                      Positioned(left: isMobile ? 6 : 8, top: 0, bottom: 0, child: Container(width: 2, color: AppColors.textWhite)),
+                                      Positioned(top: isMobile ? 6 : 8, left: 0, right: 0, child: Container(height: 2, color: _isOpen ? AppColors.textWhite : (widget.isDarkTheme ? AppColors.textWhite : Colors.black87))),
+                                      Positioned(left: isMobile ? 6 : 8, top: 0, bottom: 0, child: Container(width: 2, color: _isOpen ? AppColors.textWhite : (widget.isDarkTheme ? AppColors.textWhite : Colors.black87))),
                                     ],
                                   ),
                                 ),
@@ -446,6 +472,7 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
             ),
           ],
         ),
+      ),
       ),
     );
   }

@@ -3,7 +3,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/localization/language_provider.dart';
 
 class PremiumLanguageToggle extends StatelessWidget {
-  const PremiumLanguageToggle({super.key});
+  final bool isDarkTheme;
+  const PremiumLanguageToggle({super.key, this.isDarkTheme = true});
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +21,9 @@ class PremiumLanguageToggle extends StatelessWidget {
               width: 220,
               height: 40,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.1),
+                color: isDarkTheme ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
+                border: Border.all(color: isDarkTheme ? Colors.white.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.1), width: 1),
               ),
               child: Stack(
                 children: [
@@ -57,7 +58,7 @@ class PremiumLanguageToggle extends StatelessWidget {
                           child: AnimatedDefaultTextStyle(
                             duration: Duration.zero,
                             style: TextStyle(
-                              color: isEnglish ? AppColors.navyBlack : Colors.white,
+                              color: isEnglish ? AppColors.navyBlack : (isDarkTheme ? Colors.white : Colors.black54),
                               fontWeight: isEnglish ? FontWeight.bold : FontWeight.w500,
                               fontSize: 14,
                             ),
@@ -70,7 +71,7 @@ class PremiumLanguageToggle extends StatelessWidget {
                           child: AnimatedDefaultTextStyle(
                             duration: Duration.zero,
                             style: TextStyle(
-                              color: !isEnglish ? AppColors.navyBlack : Colors.white,
+                              color: !isEnglish ? AppColors.navyBlack : (isDarkTheme ? Colors.white : Colors.black54),
                               fontWeight: !isEnglish ? FontWeight.bold : FontWeight.w500,
                               fontSize: 14,
                             ),

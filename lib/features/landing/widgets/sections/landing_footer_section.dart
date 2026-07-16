@@ -76,19 +76,34 @@ class LandingFooterSection extends StatelessWidget {
           // Actual Footer Links
           Divider(color: AppColors.textWhite.withValues(alpha: 0.1)),
           const SizedBox(height: 40),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('© 2026 Homemade CEO', style: TextStyle(color: AppColors.textWhite.withValues(alpha: 0.54))),
-              Row(
+          isMobile
+            ? Column(
                 children: [
-                  Text('Privacy Policy', style: TextStyle(color: AppColors.textWhite.withValues(alpha: 0.54))),
-                  SizedBox(width: 24),
-                  Text('Terms of Service', style: TextStyle(color: AppColors.textWhite.withValues(alpha: 0.54))),
+                  Text('© 2026 Homemade CEO', style: TextStyle(color: AppColors.textWhite.withValues(alpha: 0.54))),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Privacy Policy', style: TextStyle(color: AppColors.textWhite.withValues(alpha: 0.54))),
+                      const SizedBox(width: 24),
+                      Text('Terms of Service', style: TextStyle(color: AppColors.textWhite.withValues(alpha: 0.54))),
+                    ],
+                  )
                 ],
               )
-            ],
-          )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('© 2026 Homemade CEO', style: TextStyle(color: AppColors.textWhite.withValues(alpha: 0.54))),
+                  Row(
+                    children: [
+                      Text('Privacy Policy', style: TextStyle(color: AppColors.textWhite.withValues(alpha: 0.54))),
+                      const SizedBox(width: 24),
+                      Text('Terms of Service', style: TextStyle(color: AppColors.textWhite.withValues(alpha: 0.54))),
+                    ],
+                  )
+                ],
+              )
         ],
       ),
     );

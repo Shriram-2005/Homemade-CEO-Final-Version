@@ -40,12 +40,16 @@ class EditorialHero extends StatelessWidget {
           ),
 
           // Content Layer (Centered)
-          Positioned(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Minimalist Label
+          Positioned.fill(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Container(
+                constraints: BoxConstraints(minHeight: MediaQuery.sizeOf(context).height),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Minimalist Label
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
@@ -67,40 +71,46 @@ class EditorialHero extends StatelessWidget {
                 const SizedBox(height: 32),
                 
                 // The Main Wordmark
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    Text(
-                      'HOMEMADE',
-                      style: TextStyle(
-                        color: AppColors.textWhite,
-                        fontSize: isMobile ? 42 : 72,
-                        fontWeight: FontWeight.w300, 
-                        letterSpacing: isMobile ? 1.0 : 4.0, 
-                        height: 1.0,
-                      ),
-                    ).animate().fade(delay: 600.ms, duration: 800.ms).slideX(begin: -0.1, end: 0, curve: Curves.easeOutQuart),
-                    SizedBox(width: isMobile ? 12 : 24),
-                    Text(
-                      'CEO',
-                      style: TextStyle(
-                        color: AppColors.accentGold,
-                        fontSize: isMobile ? 54 : 96,
-                        fontWeight: FontWeight.w900, 
-                        fontStyle: FontStyle.italic,
-                        letterSpacing: -2.0,
-                        height: 1.0,
-                        shadows: [
-                          Shadow(
-                            color: AppColors.accentGold.withValues(alpha: 0.5),
-                            blurRadius: 20,
-                          )
-                        ]
-                      ),
-                    ).animate().fade(delay: 800.ms, duration: 800.ms).scale(begin: const Offset(0.9, 0.9), end: const Offset(1.0, 1.0), curve: Curves.easeOutQuart),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Text(
+                          'HOMEMADE',
+                          style: TextStyle(
+                            color: AppColors.textWhite,
+                            fontSize: isMobile ? 42 : 72,
+                            fontWeight: FontWeight.w300, 
+                            letterSpacing: isMobile ? 1.0 : 4.0, 
+                            height: 1.0,
+                          ),
+                        ).animate().fade(delay: 600.ms, duration: 800.ms).slideX(begin: -0.1, end: 0, curve: Curves.easeOutQuart),
+                        SizedBox(width: isMobile ? 12 : 24),
+                        Text(
+                          'CEO',
+                          style: TextStyle(
+                            color: AppColors.accentGold,
+                            fontSize: isMobile ? 54 : 96,
+                            fontWeight: FontWeight.w900, 
+                            fontStyle: FontStyle.italic,
+                            letterSpacing: -2.0,
+                            height: 1.0,
+                            shadows: [
+                              Shadow(
+                                color: AppColors.accentGold.withValues(alpha: 0.5),
+                                blurRadius: 20,
+                              )
+                            ]
+                          ),
+                        ).animate().fade(delay: 800.ms, duration: 800.ms).scale(begin: const Offset(0.9, 0.9), end: const Offset(1.0, 1.0), curve: Curves.easeOutQuart),
+                      ],
+                    ),
+                  ),
                 ),
                 
                 const SizedBox(height: 40),
@@ -183,9 +193,14 @@ class EditorialHero extends StatelessWidget {
                     ),
                   ],
                 ).animate().fade(delay: 1200.ms, duration: 800.ms).slideY(begin: 0.2, end: 0, curve: Curves.easeOutQuart),
+                
+                // Extra padding at bottom for scroll view on small devices
+                const SizedBox(height: 60),
               ],
             ),
           ),
+        ),
+        ),
           
         ],
       ),
