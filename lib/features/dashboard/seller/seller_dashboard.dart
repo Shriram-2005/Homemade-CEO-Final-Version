@@ -20,10 +20,9 @@ class SellerDashboard extends StatefulWidget {
 }
 
 class _SellerDashboardState extends State<SellerDashboard> {
-  // Hard rule: sellers start on LMS (index 2) when courses not done
-  int _currentIndex = 2;
-
+  int _currentIndex = 2; // Always start on Course tab
   final _course = CourseProvider();
+  bool _wasLockedBefore = false; // Tracks if we need to show completion dialog
 
   final List<Widget> _tabs = [
     const SellerHomeTab(),
@@ -33,54 +32,137 @@ class _SellerDashboardState extends State<SellerDashboard> {
     const SellerHelpTab(),
   ];
 
-  // Tabs gated behind course completion (Products=1, Payments=3)
+  // Tabs gated behind course completion
   static const _gatedIndexes = {1, 3};
 
   @override
   void initState() {
     super.initState();
-    // Ensure we always start on LMS if courses aren't finished
+    _wasLockedBefore = !_course.canSell;
+    // Always open on LMS if not yet complete, otherwise Home
     _currentIndex = _course.canSell ? 0 : 2;
+    _course.addListener(_onCourseChanged);
+  }
+
+  @override
+  void dispose() {
+    _course.removeListener(_onCourseChanged);
+    super.dispose();
+  }
+
+  void _onCourseChanged() {
+    if (_wasLockedBefore && _course.canSell) {
+      // Courses just became fully complete — celebrate!
+      _wasLockedBefore = false;
+      _showCompletionDialog();
+    }
+  }
+
+  void _showCompletionDialog() {
+    final lang = LanguageProvider();
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          margin: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(28),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [SellerTheme.navy, SellerTheme.navyLight],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: SellerTheme.gold.withValues(alpha: 0.35), width: 1.5),
+            boxShadow: [
+              BoxShadow(color: SellerTheme.gold.withValues(alpha: 0.15), blurRadius: 40, offset: const Offset(0, 10)),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Animated icon
+              Container(
+                padding: const EdgeInsets.all(22),
+                decoration: BoxDecoration(
+                  color: SellerTheme.gold.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: SellerTheme.gold.withValues(alpha: 0.35), width: 1.5),
+                ),
+                child: const Icon(Icons.workspace_premium_rounded, color: SellerTheme.gold, size: 52),
+              ),
+              const SizedBox(height: 24),
+
+              Text(
+                lang.translate('🎉 Congratulations!', '🎉 അഭിനന്ദനങ്ങൾ!'),
+                style: const TextStyle(
+                  color: SellerTheme.gold,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -0.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                lang.translate(
+                  'You\'ve completed all course modules!\nYou can now start selling your products on Homemade CEO.',
+                  'നിങ്ങൾ എല്ലാ കോഴ്‌സ് മൊഡ്യൂളുകളും പൂർത്തിയാക്കി!\nഇപ്പോൾ ഉൽപ്പന്നങ്ങൾ വിൽക്കാൻ ആരംഭിക്കാം.',
+                ),
+                style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.6),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                lang.translate(
+                  'You can rewatch the course anytime from the Course tab, and download your certificate there too.',
+                  'Course ടാബിൽ നിന്ന് ഏത് സമയത്തും കോഴ്‌സ് വീണ്ടും കാണാം, സർട്ടിഫിക്കറ്റ് ഡൗൺലോഡ് ചെയ്യാം.',
+                ),
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.45), fontSize: 11, height: 1.5),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 28),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                    // Navigate to Home tab
+                    setState(() => _currentIndex = 0);
+                  },
+                  icon: const Icon(Icons.storefront_outlined, size: 18),
+                  label: Text(
+                    lang.translate('Start Selling →', 'വിൽക്കാൻ ആരംഭിക്കുക →'),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: SellerTheme.gold,
+                    foregroundColor: SellerTheme.navy,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    elevation: 0,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   void _onTabSelected(int i) {
     if (!_course.canSell) {
-      // Hard block — any tab that isn't the LMS tab (2) or Help tab (4) is forbidden
-      // Allow Home (0) as read-only view and Help (4), but Products (1) and Payments (3) are completely off-limits
+      // Hard block — while courses not done, only Course tab is allowed from the dashboard
+      // (menu handles its own locking, this is a second safety net)
       if (_gatedIndexes.contains(i)) {
-        // Silently redirect back to LMS — no dialog, just hard redirect
         setState(() => _currentIndex = 2);
-        _showMiniToast();
         return;
       }
     }
     setState(() => _currentIndex = i);
-  }
-
-  void _showMiniToast() {
-    final lang = LanguageProvider();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(children: [
-          const Icon(Icons.lock_outline_rounded, color: Colors.white, size: 16),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              lang.translate(
-                'Complete all course modules first to unlock this.',
-                'ആദ്യം കോഴ്‌സ് പൂർത്തിയാക്കൂ.',
-              ),
-              style: const TextStyle(fontSize: 13),
-            ),
-          ),
-        ]),
-        backgroundColor: SellerTheme.navy,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        duration: const Duration(seconds: 2),
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-      ),
-    );
   }
 
   void _onSignOut() {
@@ -93,15 +175,7 @@ class _SellerDashboardState extends State<SellerDashboard> {
     return ListenableBuilder(
       listenable: Listenable.merge([LanguageProvider(), _course]),
       builder: (context, _) {
-        // If courses just got completed while on LMS tab, allow going to index 0
-        if (!_course.canSell && !_gatedIndexes.contains(_currentIndex) && _currentIndex != 2) {
-          // Keep current non-gated tab (Home / Help) — fine
-        } else if (!_course.canSell && _gatedIndexes.contains(_currentIndex)) {
-          // Force back to LMS if somehow landed on gated tab
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            setState(() => _currentIndex = 2);
-          });
-        }
+        final bool coursesDone = _course.canSell;
 
         return Scaffold(
           backgroundColor: AppColors.backgroundCream,
@@ -113,15 +187,16 @@ class _SellerDashboardState extends State<SellerDashboard> {
                   padding: const EdgeInsets.only(top: 84.0),
                   child: Column(
                     children: [
-                      // ── Course gating banner (shows at top when locked) ──
-                      if (!_course.canSell)
+                      // ── Persistent course progress banner (disappears on completion) ──
+                      if (!coursesDone)
                         _CourseLockBanner(
                           progress: _course.progress,
                           completedCount: _course.completedCount,
                           totalCount: _course.totalCount,
                           onGoToCourse: () => setState(() => _currentIndex = 2),
                         ),
-                      // ── Actual tab content ───────────────────────────────
+
+                      // ── Tab content ──────────────────────────────────────────────────
                       Expanded(
                         child: IndexedStack(
                           index: _currentIndex,
@@ -132,6 +207,8 @@ class _SellerDashboardState extends State<SellerDashboard> {
                   ),
                 ),
               ),
+
+              // ── Floating card nav (course-aware) ─────────────────────────────────
               SellerCardNav(
                 currentIndex: _currentIndex,
                 onTabSelected: _onTabSelected,
@@ -145,8 +222,7 @@ class _SellerDashboardState extends State<SellerDashboard> {
   }
 }
 
-/// Persistent sticky banner shown at the top of the seller dashboard
-/// while courses are not yet completed.
+/// Persistent progress banner shown at the top while courses are incomplete.
 class _CourseLockBanner extends StatelessWidget {
   final double progress;
   final int completedCount;
@@ -166,9 +242,7 @@ class _CourseLockBanner extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: const BoxDecoration(
-        color: SellerTheme.navy,
-      ),
+      color: SellerTheme.navy,
       child: Row(children: [
         const Icon(Icons.school_rounded, color: SellerTheme.gold, size: 18),
         const SizedBox(width: 10),
@@ -179,7 +253,7 @@ class _CourseLockBanner extends StatelessWidget {
             children: [
               Text(
                 lang.translate(
-                  '$completedCount of $totalCount modules done — complete the course to start selling',
+                  '$completedCount of $totalCount modules done — complete the course to unlock selling',
                   '$completedCount / $totalCount മൊഡ്യൂൾ തീർന്നു — വിൽക്കാൻ കോഴ്‌സ് തീർക്കൂ',
                 ),
                 style: const TextStyle(color: Colors.white70, fontSize: 11, height: 1.3),
@@ -208,11 +282,7 @@ class _CourseLockBanner extends StatelessWidget {
             ),
             child: Text(
               lang.translate('Go to Course', 'കോഴ്‌സ്'),
-              style: const TextStyle(
-                color: SellerTheme.navy,
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(color: SellerTheme.navy, fontSize: 11, fontWeight: FontWeight.bold),
             ),
           ),
         ),

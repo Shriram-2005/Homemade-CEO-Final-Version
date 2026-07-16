@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/localization/language_provider.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/providers/course_provider.dart';
 
 class SellerCardNav extends StatefulWidget {
   final int currentIndex;
@@ -27,7 +28,7 @@ class _SellerCardNavState extends State<SellerCardNav> with SingleTickerProvider
     {
       'labelEn': 'My Shop',
       'labelMl': 'എന്റെ ഷോപ്പ്',
-      'bgColor': const Color(0xFFF9F6EA), // Soft gold/cream
+      'bgColor': const Color(0xFFF9F6EA),
       'textColor': AppColors.primaryNavy,
       'links': [
         {'labelEn': 'Home', 'labelMl': 'ഹോം', 'index': 0, 'icon': Icons.home_outlined},
@@ -37,7 +38,7 @@ class _SellerCardNavState extends State<SellerCardNav> with SingleTickerProvider
     {
       'labelEn': 'Growth',
       'labelMl': 'വളർച്ച',
-      'bgColor': const Color(0xFFEAF0F9), // Soft blue
+      'bgColor': const Color(0xFFEAF0F9),
       'textColor': AppColors.primaryNavy,
       'links': [
         {'labelEn': 'Course', 'labelMl': 'കോഴ്സ്', 'index': 2, 'icon': Icons.school_outlined},
@@ -47,7 +48,7 @@ class _SellerCardNavState extends State<SellerCardNav> with SingleTickerProvider
     {
       'labelEn': 'Finance',
       'labelMl': 'സാമ്പത്തികം',
-      'bgColor': const Color(0xFFEAF9F1), // Soft green
+      'bgColor': const Color(0xFFEAF9F1),
       'textColor': AppColors.primaryNavy,
       'links': [
         {'labelEn': 'Payments', 'labelMl': 'പേയ്‌മെന്റുകൾ', 'index': 3, 'icon': Icons.account_balance_wallet_outlined},
@@ -56,7 +57,7 @@ class _SellerCardNavState extends State<SellerCardNav> with SingleTickerProvider
     {
       'labelEn': 'Language',
       'labelMl': 'ഭാഷ',
-      'bgColor': const Color(0xFFF4EDFB), // Soft purple
+      'bgColor': const Color(0xFFF4EDFB),
       'textColor': AppColors.primaryNavy,
       'isLanguageNode': true,
     },
@@ -89,16 +90,22 @@ class _SellerCardNavState extends State<SellerCardNav> with SingleTickerProvider
   }
 
   void _selectTab(int index) {
-    widget.onTabSelected(index);
-    if (_isExpanded) {
-      _toggleMenu();
+    final canSell = CourseProvider().canSell;
+    // Hard block: if courses not done, only allow Course tab (2)
+    if (!canSell && index != 2) {
+      // Close menu and do nothing — tap is silently swallowed
+      if (_isExpanded) _toggleMenu();
+      return;
     }
+    widget.onTabSelected(index);
+    if (_isExpanded) _toggleMenu();
   }
 
   @override
   Widget build(BuildContext context) {
     final bool isMobile = MediaQuery.sizeOf(context).width < 768;
     final lang = LanguageProvider();
+    final course = CourseProvider();
 
     final double screenHeight = MediaQuery.sizeOf(context).height;
     final double maxNavHeight = screenHeight - (isMobile ? 24 : 48);
@@ -109,8 +116,10 @@ class _SellerCardNavState extends State<SellerCardNav> with SingleTickerProvider
     final double expandedHeight = calculatedExpandedHeight > maxNavHeight ? maxNavHeight : calculatedExpandedHeight;
 
     return ListenableBuilder(
-      listenable: lang,
+      listenable: Listenable.merge([lang, course]),
       builder: (context, _) {
+        final bool canSell = course.canSell;
+
         return Stack(
           children: [
             if (_isExpanded)
@@ -120,7 +129,7 @@ class _SellerCardNavState extends State<SellerCardNav> with SingleTickerProvider
                   child: Container(color: Colors.transparent),
                 ),
               ),
-              
+
             Positioned(
               top: isMobile ? 12 : 24,
               left: 0,
@@ -147,6 +156,7 @@ class _SellerCardNavState extends State<SellerCardNav> with SingleTickerProvider
                     borderRadius: BorderRadius.circular(16),
                     child: Stack(
                       children: [
+                        // ── Expanded cards ──────────────────────────────────
                         Positioned(
                           top: closedHeight,
                           left: 0,
@@ -156,20 +166,21 @@ class _SellerCardNavState extends State<SellerCardNav> with SingleTickerProvider
                             ignoring: !_isExpanded,
                             child: Padding(
                               padding: const EdgeInsets.all(12.0),
-                              child: isMobile 
+                              child: isMobile
                                   ? SingleChildScrollView(
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.stretch,
-                                        children: _menuCategories.asMap().entries.map((e) => _buildCard(e.value, e.key)).toList(),
+                                        children: _menuCategories.asMap().entries.map((e) => _buildCard(e.value, e.key, canSell)).toList(),
                                       ),
                                     )
                                   : Row(
-                                      children: _menuCategories.asMap().entries.map((e) => Expanded(child: _buildCard(e.value, e.key))).toList(),
+                                      children: _menuCategories.asMap().entries.map((e) => Expanded(child: _buildCard(e.value, e.key, canSell))).toList(),
                                     ),
                             ),
                           ),
                         ),
-                        
+
+                        // ── Top bar ─────────────────────────────────────────
                         Positioned(
                           top: 0, left: 0, right: 0,
                           height: closedHeight,
@@ -201,20 +212,34 @@ class _SellerCardNavState extends State<SellerCardNav> with SingleTickerProvider
                                       children: [
                                         Text('Homemade ', style: TextStyle(color: AppColors.navyBlack, fontSize: isMobile ? 14 : 16, fontWeight: FontWeight.w400)),
                                         Text('CEO', style: TextStyle(color: AppColors.accentGold, fontSize: isMobile ? 14 : 16, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
-                                        const SizedBox(width: 8),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                          decoration: BoxDecoration(color: AppColors.accentGold.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(4)),
-                                          child: const Text('Seller', style: TextStyle(color: AppColors.accentGold, fontSize: 10, fontWeight: FontWeight.bold)),
-                                        ),
+                                        // Course lock indicator in top bar
+                                        if (!canSell) ...[
+                                          const SizedBox(width: 8),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFFFFF3E0),
+                                              borderRadius: BorderRadius.circular(4),
+                                              border: Border.all(color: const Color(0xFFFFB300).withValues(alpha: 0.4)),
+                                            ),
+                                            child: Row(children: [
+                                              const Icon(Icons.school_outlined, size: 9, color: Color(0xFFE65100)),
+                                              const SizedBox(width: 3),
+                                              Text(
+                                                lang.translate('Course Required', 'കോഴ്സ് ആവശ്യം'),
+                                                style: const TextStyle(color: Color(0xFFE65100), fontSize: 9, fontWeight: FontWeight.bold),
+                                              ),
+                                            ]),
+                                          ),
+                                        ],
                                       ],
                                     ),
                                   ],
                                 ),
-                                
+
                                 Row(
                                   children: [
-                                     if (!isMobile) ...[
+                                    if (!isMobile) ...[
                                       Text(
                                         AuthProvider().displayIdentity,
                                         style: const TextStyle(
@@ -226,6 +251,7 @@ class _SellerCardNavState extends State<SellerCardNav> with SingleTickerProvider
                                       ),
                                       const SizedBox(width: 12),
                                     ],
+                                    // Sign Out is ALWAYS active regardless of course state
                                     MouseRegion(
                                       cursor: SystemMouseCursors.click,
                                       child: GestureDetector(
@@ -257,7 +283,7 @@ class _SellerCardNavState extends State<SellerCardNav> with SingleTickerProvider
             ),
           ],
         );
-      }
+      },
     );
   }
 
@@ -276,13 +302,7 @@ class _SellerCardNavState extends State<SellerCardNav> with SingleTickerProvider
             color: isSelected ? Colors.white : Colors.transparent,
             borderRadius: BorderRadius.circular(4),
             boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    )
-                  ]
+                ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2))]
                 : null,
           ),
           child: Text(
@@ -299,10 +319,10 @@ class _SellerCardNavState extends State<SellerCardNav> with SingleTickerProvider
     );
   }
 
-  Widget _buildCard(Map<String, dynamic> category, int index) {
+  Widget _buildCard(Map<String, dynamic> category, int index, bool canSell) {
     final lang = LanguageProvider();
     final bool isMobile = MediaQuery.sizeOf(context).width < 768;
-    
+
     final double start = (index * 0.1).clamp(0.0, 1.0);
     final double end = (start + 0.4).clamp(0.0, 1.0);
     final Animation<double> slideFadeAnim = CurvedAnimation(parent: _controller, curve: Interval(start, end, curve: Curves.easeOutQuart));
@@ -319,7 +339,10 @@ class _SellerCardNavState extends State<SellerCardNav> with SingleTickerProvider
         );
       },
       child: Container(
-        margin: EdgeInsets.only(bottom: isMobile && index < _menuCategories.length -1 ? 8 : 0, right: isMobile ? 0 : (index < _menuCategories.length - 1 ? 8 : 0)),
+        margin: EdgeInsets.only(
+          bottom: isMobile && index < _menuCategories.length - 1 ? 8 : 0,
+          right: isMobile ? 0 : (index < _menuCategories.length - 1 ? 8 : 0),
+        ),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: category['bgColor'] as Color,
@@ -354,30 +377,45 @@ class _SellerCardNavState extends State<SellerCardNav> with SingleTickerProvider
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: (category['links'] as List).map<Widget>((link) {
-                  final bool isActive = widget.currentIndex == link['index'];
-                  return MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      onTap: () => _selectTab(link['index']),
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: Row(
-                          children: [
-                            Icon(
-                              link['icon'] as IconData,
-                              size: 16,
-                              color: isActive ? AppColors.accentGold : category['textColor'].withValues(alpha: 0.5),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              lang.translate(link['labelEn'], link['labelMl']),
-                              style: TextStyle(
-                                color: isActive ? AppColors.accentGold : category['textColor'].withValues(alpha: 0.7),
-                                fontSize: 15,
-                                fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
+                  final int tabIndex = link['index'] as int;
+                  final bool isActive = widget.currentIndex == tabIndex;
+
+                  // A link is locked if courses aren't done AND it's not the Course tab (2)
+                  final bool isLocked = !canSell && tabIndex != 2;
+
+                  return Opacity(
+                    opacity: isLocked ? 0.35 : 1.0,
+                    child: MouseRegion(
+                      cursor: isLocked ? SystemMouseCursors.forbidden : SystemMouseCursors.click,
+                      child: GestureDetector(
+                        // Locked links do nothing — tap is swallowed
+                        onTap: isLocked ? null : () => _selectTab(tabIndex),
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Row(
+                            children: [
+                              Icon(
+                                // Show lock icon instead of original icon when locked
+                                isLocked ? Icons.lock_outline_rounded : link['icon'] as IconData,
+                                size: 16,
+                                color: isActive
+                                    ? AppColors.accentGold
+                                    : (category['textColor'] as Color).withValues(alpha: isLocked ? 0.4 : 0.5),
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 8),
+                              Text(
+                                lang.translate(link['labelEn'], link['labelMl']),
+                                style: TextStyle(
+                                  color: isActive
+                                      ? AppColors.accentGold
+                                      : (category['textColor'] as Color).withValues(alpha: isLocked ? 0.4 : 0.7),
+                                  fontSize: 15,
+                                  fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
+                                  decoration: isLocked ? TextDecoration.none : null,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
