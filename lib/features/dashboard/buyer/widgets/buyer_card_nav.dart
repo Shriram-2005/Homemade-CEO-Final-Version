@@ -320,7 +320,7 @@ class _BuyerCardNavState extends State<BuyerCardNav> with SingleTickerProviderSt
           children: [
             Text(
               lang.translate(category['labelEn'], category['labelMl']),
-              style: TextStyle(color: category['textColor'], fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: -0.5),
+              style: TextStyle(color: category['textColor'], fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: -0.5),
             ),
             isMobile ? const SizedBox(height: 12) : const Spacer(),
             if (category['isLanguageNode'] == true) ...[
@@ -354,7 +354,7 @@ class _BuyerCardNavState extends State<BuyerCardNav> with SingleTickerProviderSt
                           children: [
                             Icon(
                               link['icon'] as IconData,
-                              size: 14,
+                              size: 16,
                               color: isActive ? AppColors.accentGold : category['textColor'].withValues(alpha: 0.5),
                             ),
                             const SizedBox(width: 8),
@@ -362,7 +362,7 @@ class _BuyerCardNavState extends State<BuyerCardNav> with SingleTickerProviderSt
                               lang.translate(link['labelEn'], link['labelMl']),
                               style: TextStyle(
                                 color: isActive ? AppColors.accentGold : category['textColor'].withValues(alpha: 0.7),
-                                fontSize: 13,
+                                fontSize: 15,
                                 fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
                               ),
                             ),

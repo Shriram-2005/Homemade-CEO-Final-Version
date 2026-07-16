@@ -242,11 +242,11 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
               onTap: () {
                 _toggleMenu();
                 if (_selectedLoginIndex == 0) {
-                  context.go('/buyer/dashboard');
+                  context.go('/auth/buyer');
                 } else if (_selectedLoginIndex == 1) {
-                  context.go('/seller/dashboard');
+                  context.go('/auth/seller');
                 } else {
-                  context.go('/admin/dashboard');
+                  context.go('/auth/admin');
                 }
               },
               child: Container(
