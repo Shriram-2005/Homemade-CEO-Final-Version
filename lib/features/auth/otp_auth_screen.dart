@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:math';
 import '../../core/localization/language_provider.dart';
+import '../../core/providers/auth_provider.dart';
 import '../../features/dashboard/seller/seller_theme.dart';
 
 /// Shared OTP Auth Screen for both Buyer and Seller.
@@ -114,6 +115,8 @@ class _OtpAuthScreenState extends State<OtpAuthScreen> with TickerProviderStateM
   void _verifyOtp() {
     final entered = _otpControllers.map((c) => c.text).join();
     if (entered == _generatedOtp) {
+      // Persist phone number for nav bar display
+      AuthProvider().setPhone(_phone, widget.role);
       final dest = widget.role == 'buyer' ? '/buyer/dashboard' : '/seller/dashboard';
       context.go(dest);
     } else {

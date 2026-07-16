@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../admin_theme.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/localization/language_provider.dart';
+import '../../../../core/providers/auth_provider.dart';
 
 class AdminCardNav extends StatefulWidget {
   final int currentIndex;
@@ -225,16 +226,17 @@ class _AdminCardNavState extends State<AdminCardNav> with SingleTickerProviderSt
                                 Row(
                                   children: [
                                     if (!isMobile) ...[
-                                      // Admin Username
-                                      const Text(
-                                        'Arjun Menon',
-                                        style: TextStyle(
+                                      // Logged-in admin email
+                                      Text(
+                                        AuthProvider().displayIdentity,
+                                        style: const TextStyle(
                                           color: AppColors.navyBlack,
-                                          fontSize: 13,
+                                          fontSize: 12,
                                           fontWeight: FontWeight.w600,
+                                          letterSpacing: 0.2,
                                         ),
                                       ),
-                                      const SizedBox(width: 16),
+                                      const SizedBox(width: 12),
                                     ],
                                     // Sign out Button (CTA style)
                                     MouseRegion(

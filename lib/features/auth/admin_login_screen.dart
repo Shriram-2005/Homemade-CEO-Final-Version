@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/localization/language_provider.dart';
+import '../../core/providers/auth_provider.dart';
 import '../../features/dashboard/seller/seller_theme.dart';
 
 class AdminLoginScreen extends StatefulWidget {
@@ -34,6 +35,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
 
     if (_emailController.text.trim() == _demoEmail &&
         _passwordController.text == _demoPassword) {
+      AuthProvider().setEmail(_emailController.text.trim());
       if (mounted) context.go('/admin/dashboard');
     } else {
       setState(() {

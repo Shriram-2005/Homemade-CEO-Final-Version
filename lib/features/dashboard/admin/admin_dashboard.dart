@@ -9,6 +9,7 @@ import 'tabs/admin_settings_tab.dart';
 import 'widgets/admin_card_nav.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/localization/language_provider.dart';
+import '../../../../core/providers/auth_provider.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -54,7 +55,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               AdminCardNav(
                 currentIndex: _currentIndex,
                 onTabSelected: (i) => setState(() => _currentIndex = i),
-                onSignOut: () => context.go('/'),
+                onSignOut: () { AuthProvider().signOut(); context.go('/'); },
               ),
             ],
           );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/localization/language_provider.dart';
+import '../../../core/providers/auth_provider.dart';
 import 'tabs/buyer_discover_tab.dart';
 import 'tabs/buyer_saved_tab.dart';
 import 'tabs/buyer_orders_tab.dart';
@@ -47,7 +48,7 @@ class _BuyerDashboardState extends State<BuyerDashboard> {
               BuyerCardNav(
                 currentIndex: _currentIndex,
                 onTabSelected: (i) => setState(() => _currentIndex = i),
-                onSignOut: () => context.go('/'),
+                onSignOut: () { AuthProvider().signOut(); context.go('/'); },
               ),
             ],
           ),
