@@ -9,13 +9,16 @@ class CourseProvider extends ChangeNotifier {
   CourseProvider._internal();
 
   // Module statuses: 'Completed' | 'Unlocked' | 'Locked'
+  // Initial state: only the first module is unlocked for a fresh seller.
+  // Modules unlock sequentially as each one is completed.
   final List<Map<String, dynamic>> _modules = [
-    {'id': 'mod_1', 'title': 'Business Fundamentals (ബിസിനസ് അടിസ്ഥാനങ്ങൾ)', 'duration': 15, 'status': 'Completed'},
-    {'id': 'mod_2', 'title': 'Product Photography (ഉൽപ്പന്ന ഫോട്ടോഗ്രാഫി)', 'duration': 12, 'status': 'Completed'},
-    {'id': 'mod_3', 'title': 'Pricing & Margins (വിലനിർണ്ണയവും ലാഭവും)', 'duration': 18, 'status': 'Unlocked'},
+    {'id': 'mod_1', 'title': 'Business Fundamentals (ബിസിനസ് അടിസ്ഥാനങ്ങൾ)', 'duration': 15, 'status': 'Unlocked'},
+    {'id': 'mod_2', 'title': 'Product Photography (ഉൽപ്പന്ന ഫോട്ടോഗ്രാഫി)', 'duration': 12, 'status': 'Locked'},
+    {'id': 'mod_3', 'title': 'Pricing & Margins (വിലനിർണ്ണയവും ലാഭവും)', 'duration': 18, 'status': 'Locked'},
     {'id': 'mod_4', 'title': 'Packaging & Shipping (പാക്കേജിംഗും ഷിപ്പിംഗും)', 'duration': 10, 'status': 'Locked'},
     {'id': 'mod_5', 'title': 'Customer Service (ഉപഭോക്തൃ സേവനം)', 'duration': 14, 'status': 'Locked'},
   ];
+
 
   /// Developer-only bypass code (testing purposes only)
   static const String _devBypassCode = 'HOMECEO_DEV';
@@ -63,11 +66,9 @@ class CourseProvider extends ChangeNotifier {
 
   /// Reset all modules back to initial state (for testing)
   void resetAll() {
-    _modules[0]['status'] = 'Completed';
-    _modules[1]['status'] = 'Completed';
-    for (int i = 2; i < _modules.length; i++) {
+    for (int i = 0; i < _modules.length; i++) {
       _modules[i] = Map<String, dynamic>.from(_modules[i])
-        ..['status'] = i == 2 ? 'Unlocked' : 'Locked';
+        ..['status'] = i == 0 ? 'Unlocked' : 'Locked';
     }
     notifyListeners();
   }
