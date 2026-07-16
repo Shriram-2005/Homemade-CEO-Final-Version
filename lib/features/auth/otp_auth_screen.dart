@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'dart:math';
 import '../../core/localization/language_provider.dart';
 import '../../core/providers/auth_provider.dart';
+import '../../core/providers/course_provider.dart';
 import '../../features/dashboard/seller/seller_theme.dart';
 
 /// Shared OTP Auth Screen for both Buyer and Seller.
@@ -117,6 +118,11 @@ class _OtpAuthScreenState extends State<OtpAuthScreen> with TickerProviderStateM
     if (entered == _generatedOtp) {
       // Persist phone number for nav bar display
       AuthProvider().setPhone(_phone, widget.role);
+      // Always reset course state on each new seller login
+      // so bypass codes from previous sessions don't carry over
+      if (widget.role == 'seller') {
+        CourseProvider().resetAll();
+      }
       final dest = widget.role == 'buyer' ? '/buyer/dashboard' : '/seller/dashboard';
       context.go(dest);
     } else {

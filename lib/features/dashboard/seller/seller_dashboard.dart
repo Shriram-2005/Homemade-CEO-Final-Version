@@ -166,6 +166,7 @@ class _SellerDashboardState extends State<SellerDashboard> {
   }
 
   void _onSignOut() {
+    _course.resetAll(); // clear progress so next login always starts fresh
     AuthProvider().signOut();
     context.go('/');
   }
