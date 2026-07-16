@@ -194,8 +194,6 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
   Widget _buildLoginWheelView() {
     final lang = LanguageProvider();
     
-    // Moved out of State properties so it re-generates correctly on hot reload
-    // AND translates instantly when language changes!
     final List<String> loginOptions = [
       lang.translate("Buyer Login", "വാങ്ങുന്നയാൾ ലോഗിൻ"),
       lang.translate("Seller Login", "വിൽക്കുന്നയാൾ ലോഗിൻ"),
@@ -219,22 +217,86 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
             ],
           ),
         ),
-        const SizedBox(height: 60),
+        const SizedBox(height: 24),
         Text(
           lang.translate("SELECT ACCOUNT", "അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക"),
           style: const TextStyle(color: AppColors.textWhite, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 2.0),
         ),
+        const SizedBox(height: 8),
+        // Scroll hint
+        Row(children: [
+          const Icon(Icons.swipe_vertical_rounded, color: AppColors.accentGold, size: 14),
+          const SizedBox(width: 6),
+          Text(
+            lang.translate('Scroll or tap to select', 'സ്ക്രോൾ അല്ലെങ്കിൽ ടാപ്പ് ചെയ്യുക'),
+            style: TextStyle(color: AppColors.textWhite.withValues(alpha: 0.45), fontSize: 12),
+          ),
+        ]),
+        // Scroll arrows + wheel
         Expanded(
-          child: OptionWheel(
-            items: loginOptions,
-            defaultSelected: _selectedLoginIndex,
-            onChange: (index) {
-              setState(() {
-                _selectedLoginIndex = index;
-              });
-            },
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Up arrow
+              Positioned(
+                top: 4,
+                left: 40,
+                child: AnimatedOpacity(
+                  opacity: _selectedLoginIndex > 0 ? 0.6 : 0.15,
+                  duration: const Duration(milliseconds: 200),
+                  child: GestureDetector(
+                    onTap: _selectedLoginIndex > 0
+                        ? () => setState(() {
+                              _selectedLoginIndex--;
+                            })
+                        : null,
+                    child: const Icon(Icons.keyboard_arrow_up_rounded, color: AppColors.accentGold, size: 28),
+                  ),
+                ),
+              ),
+              // Down arrow
+              Positioned(
+                bottom: 4,
+                left: 40,
+                child: AnimatedOpacity(
+                  opacity: _selectedLoginIndex < loginOptions.length - 1 ? 0.6 : 0.15,
+                  duration: const Duration(milliseconds: 200),
+                  child: GestureDetector(
+                    onTap: _selectedLoginIndex < loginOptions.length - 1
+                        ? () => setState(() {
+                              _selectedLoginIndex++;
+                            })
+                        : null,
+                    child: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.accentGold, size: 28),
+                  ),
+                ),
+              ),
+              // The wheel itself
+              OptionWheel(
+                items: loginOptions,
+                defaultSelected: _selectedLoginIndex,
+                onChange: (index) => setState(() => _selectedLoginIndex = index),
+              ),
+            ],
           ),
         ),
+        // Selected account indicator
+        Center(
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.accentGold.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AppColors.accentGold.withValues(alpha: 0.3)),
+            ),
+            child: Text(
+              loginOptions[_selectedLoginIndex],
+              style: const TextStyle(color: AppColors.accentGold, fontSize: 12, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ),
+        // Continue button
         Center(
           child: MouseRegion(
             cursor: SystemMouseCursors.click,
@@ -273,6 +335,7 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
       ],
     );
   }
+
 
   Widget _buildAnimatedMenuItem(int index, String label, bool isLoginAction) {
     final double start = 0.25 + (index * 0.1);
