@@ -60,7 +60,8 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
               child: Column(
                 children: [
                   // ── Dark navy hero ─────────────────────────────────────
-                  Padding(
+                  Container(
+                    width: double.infinity,
                     padding: const EdgeInsets.fromLTRB(28, 40, 28, 0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

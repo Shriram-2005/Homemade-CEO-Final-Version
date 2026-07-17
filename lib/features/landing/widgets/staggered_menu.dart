@@ -245,7 +245,7 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
               ),
               // Up arrow
               Positioned(
-                top: 57,
+                top: 70,
                 right: 0,
                 child: AnimatedOpacity(
                   opacity: _selectedLoginIndex > 0 ? 0.8 : 0.2,
@@ -271,7 +271,7 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
               ),
               // Down arrow
               Positioned(
-                bottom: 57,
+                bottom: 70,
                 right: 0,
                 child: AnimatedOpacity(
                   opacity: _selectedLoginIndex < loginOptions.length - 1 ? 0.8 : 0.2,
