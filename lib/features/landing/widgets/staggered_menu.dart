@@ -240,24 +240,25 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
               // Up arrow
               Positioned(
                 top: 60,
-                right: 36,
+                right: 16,
                 child: AnimatedOpacity(
                   opacity: _selectedLoginIndex > 0 ? 0.8 : 0.2,
                   duration: const Duration(milliseconds: 200),
                   child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
                     onTap: _selectedLoginIndex > 0
                         ? () => setState(() {
                               _selectedLoginIndex--;
                             })
                         : null,
                     child: Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(16), // Larger hit area
                       decoration: BoxDecoration(
                         color: AppColors.accentGold.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                         border: Border.all(color: AppColors.accentGold.withValues(alpha: 0.3)),
                       ),
-                      child: const Icon(Icons.expand_less_rounded, color: AppColors.accentGold, size: 22),
+                      child: const Icon(Icons.expand_less_rounded, color: AppColors.accentGold, size: 24),
                     ),
                   ),
                 ),
@@ -265,24 +266,25 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
               // Down arrow
               Positioned(
                 bottom: 60,
-                right: 36,
+                right: 16,
                 child: AnimatedOpacity(
                   opacity: _selectedLoginIndex < loginOptions.length - 1 ? 0.8 : 0.2,
                   duration: const Duration(milliseconds: 200),
                   child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
                     onTap: _selectedLoginIndex < loginOptions.length - 1
                         ? () => setState(() {
                               _selectedLoginIndex++;
                             })
                         : null,
                     child: Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(16), // Larger hit area
                       decoration: BoxDecoration(
                         color: AppColors.accentGold.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                         border: Border.all(color: AppColors.accentGold.withValues(alpha: 0.3)),
                       ),
-                      child: const Icon(Icons.expand_more_rounded, color: AppColors.accentGold, size: 22),
+                      child: const Icon(Icons.expand_more_rounded, color: AppColors.accentGold, size: 24),
                     ),
                   ),
                 ),
