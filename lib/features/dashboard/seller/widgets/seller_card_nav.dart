@@ -231,6 +231,19 @@ class _SellerCardNavState extends State<SellerCardNav> with SingleTickerProvider
                                               ),
                                             ]),
                                           ),
+                                        ] else ...[
+                                          const SizedBox(width: 8),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.accentGold.withValues(alpha: 0.1),
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: const Text(
+                                              'Seller',
+                                              style: TextStyle(color: AppColors.accentGold, fontSize: 10, fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
                                         ],
                                       ],
                                     ),
