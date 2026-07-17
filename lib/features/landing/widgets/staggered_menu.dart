@@ -245,8 +245,8 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
               ),
               // Up arrow
               Positioned(
-                top: 60,
-                right: 16,
+                top: 85,
+                right: 0,
                 child: AnimatedOpacity(
                   opacity: _selectedLoginIndex > 0 ? 0.8 : 0.2,
                   duration: const Duration(milliseconds: 200),
@@ -258,21 +258,21 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
                             })
                         : null,
                     child: Container(
-                      padding: const EdgeInsets.all(16), // Larger hit area
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: AppColors.accentGold.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                         border: Border.all(color: AppColors.accentGold.withValues(alpha: 0.3)),
                       ),
-                      child: const Icon(Icons.expand_less_rounded, color: AppColors.accentGold, size: 24),
+                      child: const Icon(Icons.expand_less_rounded, color: AppColors.accentGold, size: 20),
                     ),
                   ),
                 ),
               ),
               // Down arrow
               Positioned(
-                bottom: 60,
-                right: 16,
+                bottom: 85,
+                right: 0,
                 child: AnimatedOpacity(
                   opacity: _selectedLoginIndex < loginOptions.length - 1 ? 0.8 : 0.2,
                   duration: const Duration(milliseconds: 200),
@@ -284,13 +284,13 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
                             })
                         : null,
                     child: Container(
-                      padding: const EdgeInsets.all(16), // Larger hit area
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: AppColors.accentGold.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                         border: Border.all(color: AppColors.accentGold.withValues(alpha: 0.3)),
                       ),
-                      child: const Icon(Icons.expand_more_rounded, color: AppColors.accentGold, size: 24),
+                      child: const Icon(Icons.expand_more_rounded, color: AppColors.accentGold, size: 20),
                     ),
                   ),
                 ),
