@@ -239,8 +239,8 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
             children: [
               // Up arrow
               Positioned(
-                top: 0,
-                left: 36,
+                top: 60,
+                right: 36,
                 child: AnimatedOpacity(
                   opacity: _selectedLoginIndex > 0 ? 0.8 : 0.2,
                   duration: const Duration(milliseconds: 200),
@@ -264,8 +264,8 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
               ),
               // Down arrow
               Positioned(
-                bottom: 0,
-                left: 36,
+                bottom: 60,
+                right: 36,
                 child: AnimatedOpacity(
                   opacity: _selectedLoginIndex < loginOptions.length - 1 ? 0.8 : 0.2,
                   duration: const Duration(milliseconds: 200),
@@ -381,7 +381,10 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
           child: GestureDetector(
             onTap: () {
               if (isLoginAction) {
-                setState(() => _showLoginWheel = true);
+                setState(() {
+                  _showLoginWheel = true;
+                  _selectedLoginIndex = 1; // Always default to Seller Login when opened
+                });
               } else {
                 final route = menuItems[index].route;
                 _toggleMenu();
