@@ -8,7 +8,8 @@ import '../../features/dashboard/buyer/buyer_dashboard.dart';
 import '../../features/dashboard/admin/admin_dashboard.dart';
 import '../../features/auth/otp_auth_screen.dart';
 import '../../features/auth/admin_login_screen.dart';
-
+import '../../features/community/community_screen.dart';
+import '../../features/contact/contact_screen.dart';
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/',
@@ -28,6 +29,14 @@ class AppRouter {
       GoRoute(
         path: '/products',
         builder: (context, state) => const ProductsScreen(),
+      ),
+      GoRoute(
+        path: '/community',
+        builder: (context, state) => const CommunityScreen(),
+      ),
+      GoRoute(
+        path: '/contact',
+        builder: (context, state) => const ContactScreen(),
       ),
       // ── Auth ──────────────────────────────────────────────────────────────
       GoRoute(
