@@ -237,6 +237,12 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
           child: Stack(
             alignment: Alignment.center,
             children: [
+              // The wheel itself (must be first in Stack to be painted at the bottom)
+              OptionWheel(
+                items: loginOptions,
+                defaultSelected: _selectedLoginIndex,
+                onChange: (index) => setState(() => _selectedLoginIndex = index),
+              ),
               // Up arrow
               Positioned(
                 top: 60,
@@ -288,12 +294,6 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
                     ),
                   ),
                 ),
-              ),
-              // The wheel itself
-              OptionWheel(
-                items: loginOptions,
-                defaultSelected: _selectedLoginIndex,
-                onChange: (index) => setState(() => _selectedLoginIndex = index),
               ),
             ],
           ),
