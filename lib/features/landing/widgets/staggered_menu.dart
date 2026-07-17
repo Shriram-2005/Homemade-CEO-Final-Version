@@ -27,7 +27,7 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
   late AnimationController _controller;
   bool _isOpen = false;
   bool _showLoginWheel = false;
-  int _selectedLoginIndex = 0;
+  int _selectedLoginIndex = 1; // Default to Seller Login
 
   final List<MenuItemData> menuItems = [
     MenuItemData(labelEn: "Home", labelMl: "ഹോം", route: "/landing"),
@@ -239,10 +239,10 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
             children: [
               // Up arrow
               Positioned(
-                top: 4,
-                left: 40,
+                top: 0,
+                left: 36,
                 child: AnimatedOpacity(
-                  opacity: _selectedLoginIndex > 0 ? 0.6 : 0.15,
+                  opacity: _selectedLoginIndex > 0 ? 0.8 : 0.2,
                   duration: const Duration(milliseconds: 200),
                   child: GestureDetector(
                     onTap: _selectedLoginIndex > 0
@@ -250,16 +250,24 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
                               _selectedLoginIndex--;
                             })
                         : null,
-                    child: const Icon(Icons.keyboard_arrow_up_rounded, color: AppColors.accentGold, size: 28),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.accentGold.withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.accentGold.withValues(alpha: 0.3)),
+                      ),
+                      child: const Icon(Icons.expand_less_rounded, color: AppColors.accentGold, size: 22),
+                    ),
                   ),
                 ),
               ),
               // Down arrow
               Positioned(
-                bottom: 4,
-                left: 40,
+                bottom: 0,
+                left: 36,
                 child: AnimatedOpacity(
-                  opacity: _selectedLoginIndex < loginOptions.length - 1 ? 0.6 : 0.15,
+                  opacity: _selectedLoginIndex < loginOptions.length - 1 ? 0.8 : 0.2,
                   duration: const Duration(milliseconds: 200),
                   child: GestureDetector(
                     onTap: _selectedLoginIndex < loginOptions.length - 1
@@ -267,7 +275,15 @@ class _StaggeredMenuState extends State<StaggeredMenu> with SingleTickerProvider
                               _selectedLoginIndex++;
                             })
                         : null,
-                    child: const Icon(Icons.keyboard_arrow_down_rounded, color: AppColors.accentGold, size: 28),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.accentGold.withValues(alpha: 0.15),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.accentGold.withValues(alpha: 0.3)),
+                      ),
+                      child: const Icon(Icons.expand_more_rounded, color: AppColors.accentGold, size: 22),
+                    ),
                   ),
                 ),
               ),

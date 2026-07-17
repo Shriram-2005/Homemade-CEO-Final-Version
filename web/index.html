@@ -29,6 +29,18 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
+  <!-- Prevent zoom and pull-to-refresh -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    html, body {
+      overscroll-behavior: none;
+      touch-action: pan-x pan-y;
+      /* Prevent text selection causing weird behaviors on drag */
+      -webkit-user-select: none;
+      user-select: none;
+    }
+  </style>
+
   <title>homemade_ceo</title>
   <link rel="manifest" href="manifest.json">
 </head>
