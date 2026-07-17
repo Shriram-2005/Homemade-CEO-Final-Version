@@ -138,7 +138,7 @@ class _OptionWheelState extends State<OptionWheel> with SingleTickerProviderStat
         onVerticalDragEnd: _onPanEnd,
         child: Container(
           height: 300, // Fixed height for the wheel viewport
-          width: 300,
+          width: 600,
           color: Colors.transparent, // Hit area
           child: Stack(
             alignment: Alignment.centerLeft,
@@ -176,6 +176,7 @@ class _OptionWheelState extends State<OptionWheel> with SingleTickerProviderStat
 
     Widget child = Text(
       widget.items[index],
+      textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: isSelected ? 48 : 42,
         fontWeight: isSelected ? FontWeight.w600 : FontWeight.w300,
@@ -186,13 +187,14 @@ class _OptionWheelState extends State<OptionWheel> with SingleTickerProviderStat
 
 
     return Positioned(
-      left: 40,
+      left: 0,
+      right: 0,
       top: 150, // center of viewport
       child: Transform.translate(
         offset: Offset(x, y - (isSelected ? 24 : 21)), // Adjust for font centering
         child: Transform.rotate(
           angle: rot * math.pi / 180,
-          alignment: Alignment.centerLeft,
+          alignment: Alignment.center,
           child: Opacity(
             opacity: opacity,
             child: GestureDetector(
