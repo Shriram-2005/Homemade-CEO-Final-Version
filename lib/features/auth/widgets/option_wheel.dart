@@ -41,6 +41,23 @@ class _OptionWheelState extends State<OptionWheel> with SingleTickerProviderStat
   }
   
   @override
+  void didUpdateWidget(OptionWheel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.defaultSelected != oldWidget.defaultSelected) {
+      if ((_scrollPosition - widget.defaultSelected).abs() > 0.1) {
+        _scrollPosition = widget.defaultSelected.toDouble();
+        _dragVelocity = 0;
+        _controller.stop();
+        // Trigger a rebuild so it snaps visually
+        // Using a microtask to avoid setState during build phase, just in case
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) setState(() {});
+        });
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _controller.removeListener(_onAnimationTick);
     _controller.dispose();
